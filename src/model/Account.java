@@ -1,5 +1,7 @@
 package model;
 
+// Andrew Wilson - 101069860
+
 public class Account {
     // the account number
     private long accountNum;

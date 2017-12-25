@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+// Andrew Wilson - 101069860
+
 public class Assignment2 extends Application implements EventHandler<ActionEvent> {
     private  Scene home,addScene,depositScene,withdrawScene,listScene,transferScene;
     Stage window;  // represents main Stage globally
