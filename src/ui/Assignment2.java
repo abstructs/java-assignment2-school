@@ -13,10 +13,12 @@ import exception.DuplicateAccountNumber;
 // Andrew Wilson - 101069860
 
 public class Assignment2 extends Application implements EventHandler<ActionEvent> {
-    private  Scene home,addScene,depositScene,withdrawScene,listScene,transferScene;
+    private Scene home,addScene,depositScene,withdrawScene,listScene,transferScene;
     Stage window;  // represents main Stage globally
-    Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome;
-    TextField custName,custAccNum,custBalance,errorField;
+    Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome,
+        btnWithdraw,btnDeposit,btnTransfer,btnHomeDep,btnHomeWith,btnTransferHome;
+    TextField custName,custAccNum,custBalance,errorField,custWithdraw,custDeposit,fromAccountNumFld,
+            toAccountNumFld,custAccNumDep,custAccNumWith;
     TextArea accountList;
     Bank bank;
 
@@ -61,10 +63,39 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         listScene = new Scene (listLayout,500,500);
 
         // setting up Deposit Scene
-    
+        Label lblAccNumDep = new Label("Account#:");
+        Label lblDepositAmount = new Label("Deposit Amount:");
+        btnHomeDep = new Button("Back");btnHomeDep.setOnAction(this);
+        custAccNumDep = new TextField();
+        custDeposit = new TextField();
+        btnDeposit = new Button("Deposit");
+        VBox depositLayout = new VBox();
+        depositLayout.getChildren().addAll(lblAccNumDep,custAccNumDep,lblDepositAmount,custDeposit,btnDeposit,btnHomeDep);
+        depositScene = new Scene(depositLayout,500,500);
+
         // setting up Withdraw Scene
+        Label lblAccNumWith = new Label("Account#:");
+        Label lblWithdrawAmount = new Label("Withdrawl Amount:");
+        btnHomeWith = new Button("Back");btnHomeWith.setOnAction(this);
+        custAccNumWith = new TextField();
+        custWithdraw = new TextField();
+        btnWithdraw = new Button("Withdraw");
+        VBox withdrawLayout = new VBox();
+        withdrawLayout.getChildren().addAll(lblAccNumWith,custAccNumWith,lblWithdrawAmount,custWithdraw,btnWithdraw,btnHomeWith);
+        withdrawScene = new Scene(withdrawLayout,500,500);
 
         // setting up Transfer Scene
+        Label lblAccNumFrom = new Label("From Account#:");
+        Label lblAccNumTo = new Label("To Account#:");
+        Label lblTransferAmount = new Label("Transfer Amount:");
+        btnTransferHome = new Button("Back");btnTransferHome.setOnAction(this);
+        fromAccountNumFld = new TextField();
+        toAccountNumFld = new TextField();
+        btnTransfer = new Button("Transfer");
+        VBox transferLayout = new VBox();
+        transferLayout.getChildren().addAll(lblAccNumFrom,fromAccountNumFld,lblAccNumTo,toAccountNumFld,lblTransferAmount,
+                btnTransfer,btnTransferHome);
+        transferScene = new Scene(transferLayout,500,500);
 
         window.setScene(home);
         window.show();
@@ -85,9 +116,22 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
             System.out.println("list accounts btn pressed (on menu scene)");
             window.setScene(listScene);
         }
-        if (e.getSource()==btnHome||e.getSource()==btnListHome){
-            System.out.println("add account btn pressed (on add scene or list scene)");
+        if (e.getSource()==btnHome||e.getSource()==btnListHome||e.getSource()==btnHomeDep||e.getSource()==btnHomeWith
+                || e.getSource()==btnTransferHome){
+            System.out.println("add account btn pressed (on add scene or list scene or home)");
             window.setScene(home);
+        }
+        if (e.getSource()==btnDepositMenu){
+            System.out.println("add account btn pressed (on deposit scene)");
+            window.setScene(depositScene);
+        }
+        if (e.getSource()==btnWithdrawMenu){
+            System.out.println("add account btn pressed (on withdraw scene)");
+            window.setScene(withdrawScene);
+        }
+        if (e.getSource()==btnTransferMenu){
+            System.out.println("add account btn pressed (on transfer scene)");
+            window.setScene(transferScene);
         }
 
         if(e.getSource() == btnAdd) {
@@ -96,6 +140,7 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
                         custName.getText());
                 window.setScene(home);
             } catch(DuplicateAccountNumber exception) {
+                System.out.println(exception);
                 errorField.setText("That account number is already in use! Please try a different one.");
             }
             catch(Exception exception) {
