@@ -1,4 +1,5 @@
 package model;
+import exception.AccountNotFound;
 import exception.DuplicateAccountNumber;
 // Andrew Wilson - 101069860
 
@@ -64,21 +65,23 @@ public class Bank {
     // EFFECTS:  finds the account with the matching
     //           account number in accountList and if it exists,
     //           adds the amount to the balance
-    public void depositAccount(long accNum, double amount) {
+    public void depositAccount(long accNum, double amount) throws AccountNotFound {
         try {
             accountList[this.findAccount(accNum)].deposit(amount);
-        } catch(ArrayIndexOutOfBoundsException e) {}
+        } catch(ArrayIndexOutOfBoundsException e) {
+            throw new AccountNotFound();
+        }
     }
 
     // EFFECTS: finds the account with the matching account number
     //          in accountList and if it exists, withdraws the
     //          amount from the balance if possible and returns a boolean
     //          corresponding to whether the withdraw was successful
-    public boolean withdrawAccount(long accNum, double amount) {
+    public boolean withdrawAccount(long accNum, double amount) throws AccountNotFound {
         try {
             return accountList[this.findAccount(accNum)].withdraw(amount);
         } catch(ArrayIndexOutOfBoundsException e) {
-            return false;
+            throw new AccountNotFound();
         }
     }
 

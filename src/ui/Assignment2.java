@@ -1,4 +1,5 @@
 package ui;
+import exception.AccountNotFound;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.event.ActionEvent;
@@ -17,8 +18,8 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
     Stage window;  // represents main Stage globally
     Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome,
         btnWithdraw,btnDeposit,btnTransfer,btnHomeDep,btnHomeWith,btnTransferHome;
-    TextField custName,custAccNum,custBalance,custWithdraw,custDeposit,fromAccountNumFld,
-            toAccountNumFld,custAccNumDep,custAccNumWith;
+    TextField custName,custAccNum,custBalance, custWithdrawAmount, custDepositAmount,fromAccountNumFld,
+            toAccountNumFld,custAccNumDep, custAccNumWithdraw;
     TextArea accountList;
     Bank bank;
 
@@ -66,21 +67,21 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         Label lblDepositAmount = new Label("Deposit Amount:");
         btnHomeDep = new Button("Back");btnHomeDep.setOnAction(this);
         custAccNumDep = new TextField();
-        custDeposit = new TextField();
-        btnDeposit = new Button("Deposit");
+        custDepositAmount = new TextField();
+        btnDeposit = new Button("Deposit");btnDeposit.setOnAction(this);
         VBox depositLayout = new VBox();
-        depositLayout.getChildren().addAll(lblAccNumDep,custAccNumDep,lblDepositAmount,custDeposit,btnDeposit,btnHomeDep);
+        depositLayout.getChildren().addAll(lblAccNumDep,custAccNumDep,lblDepositAmount, custDepositAmount,btnDeposit,btnHomeDep);
         depositScene = new Scene(depositLayout,500,500);
 
         // setting up Withdraw Scene
         Label lblAccNumWith = new Label("Account#:");
         Label lblWithdrawAmount = new Label("Withdrawl Amount:");
         btnHomeWith = new Button("Back");btnHomeWith.setOnAction(this);
-        custAccNumWith = new TextField();
-        custWithdraw = new TextField();
-        btnWithdraw = new Button("Withdraw");
+        custAccNumWithdraw = new TextField();
+        custWithdrawAmount = new TextField();
+        btnWithdraw = new Button("Withdraw");btnWithdraw.setOnAction(this);
         VBox withdrawLayout = new VBox();
-        withdrawLayout.getChildren().addAll(lblAccNumWith,custAccNumWith,lblWithdrawAmount,custWithdraw,btnWithdraw,btnHomeWith);
+        withdrawLayout.getChildren().addAll(lblAccNumWith, custAccNumWithdraw,lblWithdrawAmount, custWithdrawAmount,btnWithdraw,btnHomeWith);
         withdrawScene = new Scene(withdrawLayout,500,500);
 
         // setting up Transfer Scene
@@ -90,7 +91,7 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         btnTransferHome = new Button("Back");btnTransferHome.setOnAction(this);
         fromAccountNumFld = new TextField();
         toAccountNumFld = new TextField();
-        btnTransfer = new Button("Transfer");
+        btnTransfer = new Button("Transfer");btnTransfer.setOnAction(this);
         VBox transferLayout = new VBox();
         transferLayout.getChildren().addAll(lblAccNumFrom,fromAccountNumFld,lblAccNumTo,toAccountNumFld,lblTransferAmount,
                 btnTransfer,btnTransferHome);
@@ -117,19 +118,19 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         }
         if (e.getSource()==btnHome||e.getSource()==btnListHome||e.getSource()==btnHomeDep||e.getSource()==btnHomeWith
                 || e.getSource()==btnTransferHome){
-            System.out.println("add account btn pressed (on add scene or list scene or home)");
+            System.out.println("'action'/back account btn pressed");
             window.setScene(home);
         }
         if (e.getSource()==btnDepositMenu){
-            System.out.println("add account btn pressed (on deposit scene)");
+            System.out.println("deposit btn pressed (on deposit scene)");
             window.setScene(depositScene);
         }
         if (e.getSource()==btnWithdrawMenu){
-            System.out.println("add account btn pressed (on withdraw scene)");
+            System.out.println("withdraw btn pressed (on withdraw scene)");
             window.setScene(withdrawScene);
         }
         if (e.getSource()==btnTransferMenu){
-            System.out.println("add account btn pressed (on transfer scene)");
+            System.out.println("transfer btn pressed (on transfer scene)");
             window.setScene(transferScene);
         }
         if(e.getSource() == btnAdd) {
@@ -138,19 +139,46 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
                 bank.addAccount(Long.valueOf(custAccNum.getText()), Double.valueOf(custBalance.getText()),
                         custName.getText());
                 window.setScene(home);
+                showAlert("Successfully added an account for " + custName.getText() + "!");
             } catch(DuplicateAccountNumber exception) {
                 System.out.println(exception);
                 showAlert("That account number is already in use! Please try a different one.");
             }
             catch(Exception exception) {
                 System.out.println(exception);
-                showAlert("Something went wrong! Please set the values correctly.");
+                showAlert("Something went wrong! Please ensure the values are set correctly.");
             }
         }
         if(e.getSource()==btnDeposit) {
+            try {
+                bank.depositAccount(Long.valueOf(custAccNumDep.getText()), Double.valueOf(custDepositAmount.getText()));
+                window.setScene(home);
+                showAlert("Successfully deposited " + Double.valueOf(custDepositAmount.getText()) + " dollars!");
+            } catch(AccountNotFound exception) {
+                System.out.println(exception);
+                showAlert("An account with that account number doesn't exist!");
+            }
+            catch(Exception exception) {
+                System.out.println(exception);
+                showAlert("Something went wrong! Please ensure the values are set correctly.");
+            }
             System.out.println("Deposit");
         }
         if(e.getSource()==btnWithdraw) {
+            try {
+                if(!bank.withdrawAccount(Long.valueOf(custAccNumWithdraw.getText()), Double.valueOf(custWithdrawAmount.getText()))) {
+                    showAlert("Not enough funds!");
+                } else {
+                    window.setScene(home);
+                    showAlert("Successfully withdrew " + Double.valueOf(custWithdrawAmount.getText()) + " dollars!");
+                }
+            } catch(AccountNotFound exception) {
+                System.out.println(exception);
+                showAlert("An account with that account number doesn't exist!");
+            } catch (Exception exception) {
+                System.out.println(exception);
+                showAlert("Something went wrong! Please ensure the values are set correctly.");
+            }
             System.out.println("Withdraw");
         }
         if(e.getSource()==btnTransfer) {
