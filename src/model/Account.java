@@ -35,20 +35,29 @@ public class Account {
     // MODIFIES: balance
     // REQUIRES: account must hold more than the withdraw amount
     public boolean withdraw(double amount) {
-        return false;
+        if(this.balance < amount) {
+            return false;
+        }
+
+        this.balance -= amount;
+        return true;
     }
 
     // EFFECTS: increases the balance by amount
     // MODIFIES: balance
-    public boolean deposit(double amount) {
-        return false;
+    public void deposit(double amount) {
+        this.balance += amount;
     }
 
-    // EFFECTS: transfers money from one account to another.
+    // EFFECTS: transfers money from another account to this one.
     //          if there are sufficient funds performs the transaction and returns a boolean
     // REQUIRES: there must be sufficient money in sending account
     // MODIFIES: balance
     public boolean transfer(Account acc, long amount) {
+        if(acc.withdraw(amount)) {
+            this.deposit(amount);
+            return true;
+        }
         return false;
     }
 
