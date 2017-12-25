@@ -63,6 +63,6 @@ public class Account {
 
     @Override
     public String toString() {
-        return super.toString();
+        return String.format("Account Owner: %s. Account Number: %d. Balance: $%.2f. ", this.owner, this.accountNum, this.balance);
     }
 }

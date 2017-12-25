@@ -1,4 +1,4 @@
-package assignment2;
+package ui;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.event.ActionEvent;
@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import model.Bank;
+import exception.DuplicateAccountNumber;
 
 // Andrew Wilson - 101069860
 
@@ -14,11 +16,15 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
     private  Scene home,addScene,depositScene,withdrawScene,listScene,transferScene;
     Stage window;  // represents main Stage globally
     Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome;
-    TextField custName,custAccNum,custBalance,accountList;
+    TextField custName,custAccNum,custBalance,errorField;
+    TextArea accountList;
+    Bank bank;
+
     public void init(){
     }
 
     public void start(Stage primaryStage) throws  Exception {
+        bank = new Bank();
         window = primaryStage;
         // setting up Home Scene
         Label lblHomeMenu = new Label("Welcome to Trusty Bank. Please select an option from below");
@@ -41,17 +47,24 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         custBalance = new TextField();
         btnAdd = new Button("Add Account");btnAdd.setOnAction(this);
         btnHome = new Button("Back");btnHome.setOnAction(this);
+        errorField = new TextField();
         VBox addLayout =new VBox();
-        addLayout.getChildren().addAll(lblName,custName,lblAccNum,custAccNum,lblBalance,custBalance,btnAdd,btnHome);
+        addLayout.getChildren().addAll(lblName,custName,lblAccNum,custAccNum,lblBalance,custBalance,btnAdd,btnHome,errorField);
         addScene = new Scene(addLayout,500,500);
 
         // setting up List Scene
         Label lblShow = new Label("List of accounts...");
-        accountList = new TextField();
+        accountList = new TextArea();
         btnListHome = new Button("Back");btnListHome.setOnAction(this);btnListHome.setMaxWidth(Double.MAX_VALUE);
         VBox listLayout =new VBox();
         listLayout.getChildren().addAll(lblShow,accountList,btnListHome);
         listScene = new Scene (listLayout,500,500);
+
+        // setting up Deposit Scene
+    
+        // setting up Withdraw Scene
+
+        // setting up Transfer Scene
 
         window.setScene(home);
         window.show();
@@ -78,16 +91,28 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         }
 
         if(e.getSource() == btnAdd) {
-            custAccNum.getText();
-            custBalance.getText();
-            custName.getText();
+            try {
+                bank.addAccount(Long.valueOf(custAccNum.getText()), Double.valueOf(custBalance.getText()),
+                        custName.getText());
+                window.setScene(home);
+            } catch(DuplicateAccountNumber exception) {
+                errorField.setText("That account number is already in use! Please try a different one.");
+            }
+            catch(Exception exception) {
+                System.out.println(exception);
+                errorField.setText("Something went wrong! Please set the values correctly.");
+            }
         }
+
+        if(e.getSource() == btnListMenu) {
+            accountList.setText(bank.printAccounts());
+        }
+
 
     }
 
     public static void main(String[] args) {
         launch(args);
-
     }
 
 }

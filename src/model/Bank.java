@@ -1,5 +1,5 @@
 package model;
-
+import exception.DuplicateAccountNumber;
 // Andrew Wilson - 101069860
 
 public class Bank {
@@ -19,9 +19,13 @@ public class Bank {
         this.numAccounts = 0;
     }
 
-
     // EFFECTS: creates and adds an account  to the array
-    public boolean addAccount(long accNum, double bal, String own) {
+    // REQUIRES: accountNum must be unique
+    public boolean addAccount(long accNum, double bal, String own) throws DuplicateAccountNumber {
+        if(this.findAccount(accNum) != -1) {
+            throw new DuplicateAccountNumber("Account number already in use.");
+        }
+
         if(numAccounts + 1 < maxAccount) {
             Account acc = new Account(accNum, bal, own);
             this.accountList[numAccounts++] = acc;
@@ -37,8 +41,8 @@ public class Bank {
         // copied over. See https://stackoverflow.com/questions/5234147/why-stringbuilder-when-there-is-string
         // for more.
         StringBuilder stringBuilder = new StringBuilder();
-        for(Account a : accountList) {
-            stringBuilder.append(a.toString()).append("\n");
+        for(int i = 0; i < numAccounts; i++) {
+            stringBuilder.append(accountList[i].toString()).append("\n");
         }
         return stringBuilder.toString();
     }
@@ -47,8 +51,8 @@ public class Bank {
     //          returns -1 if the object does not exist
     public int findAccount(long accNum) {
         int index = 0;
-        for(Account acc : accountList) {
-            if(acc.getAccountNum() == accNum) {
+        for(int i = 0; i < numAccounts; i++) {
+            if(accountList[i].getAccountNum() == accNum) {
                 return index;
             }
             index++;
@@ -61,11 +65,9 @@ public class Bank {
     //           account number in accountList and if it exists,
     //           adds the amount to the balance
     public void depositAccount(long accNum, double amount) {
-        for(Account acc : accountList) {
-            if(acc.getAccountNum() == accNum) {
-                acc.deposit(amount);
-            }
-        }
+        try {
+            accountList[this.findAccount(accNum)].deposit(amount);
+        } catch(ArrayIndexOutOfBoundsException e) {}
     }
 
     // EFFECTS: finds the account with the matching account number
@@ -73,32 +75,23 @@ public class Bank {
     //          amount from the balance if possible and returns a boolean
     //          corresponding to whether the withdraw was successful
     public boolean withdrawAccount(long accNum, double amount) {
-        for(Account acc : accountList) {
-            if(acc.getAccountNum() == accNum) {
-                return acc.withdraw(amount);
-            }
+        try {
+            return accountList[this.findAccount(accNum)].withdraw(amount);
+        } catch(ArrayIndexOutOfBoundsException e) {
+            return false;
         }
-
-        return false;
     }
 
     // EFFECTS: finds both of the accounts with the matching account
     //          numbers in accountList and if they exist,
     //          attempts to perform the transfer.
     public boolean transfer(long accNumFrom,long accNumTo, double amount) {
-        // initialized to null so we can check if they've been set in the loop
-        Account accFrom = null;
-        Account accTo = null;
-
-        for (Account acc : accountList) {
-            if (acc.getAccountNum() == accNumFrom) {
-                accFrom = acc;
-            } else if (acc.getAccountNum() == accNumTo) {
-                accTo = acc;
-            }
+        try {
+            Account accFrom = accountList[this.findAccount(accNumFrom)];
+            Account accTo = accountList[this.findAccount(accNumTo)];
+            return accFrom.transfer(accTo, amount);
+        } catch(ArrayIndexOutOfBoundsException e) {
+            return false;
         }
-
-        // will short circuit and return false if either accFrom or accTo are null
-        return accFrom != null && accTo != null && accFrom.transfer(accTo, amount);
     }
 }
