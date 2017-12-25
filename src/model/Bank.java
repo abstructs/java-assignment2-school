@@ -88,13 +88,23 @@ public class Bank {
     // EFFECTS: finds both of the accounts with the matching account
     //          numbers in accountList and if they exist,
     //          attempts to perform the transfer.
-    public boolean transfer(long accNumFrom,long accNumTo, double amount) {
+    public boolean transfer(long accNumFrom,long accNumTo, double amount) throws AccountNotFound {
+        boolean fromAccFound = false;
+        boolean toAccFound = false;
         try {
             Account accFrom = accountList[this.findAccount(accNumFrom)];
+            fromAccFound = true;
             Account accTo = accountList[this.findAccount(accNumTo)];
+            toAccFound = true;
             return accFrom.transfer(accTo, amount);
         } catch(ArrayIndexOutOfBoundsException e) {
-            return false;
+            if(!fromAccFound && !toAccFound) {
+                throw new AccountNotFound("Neither of the accounts entered exist!");
+            } else if(!fromAccFound) {
+                throw new AccountNotFound("From account doesn't exist!");
+            } else {
+                throw new AccountNotFound("To account doesn't exist!");
+            }
         }
     }
 }

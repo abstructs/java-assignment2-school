@@ -18,8 +18,8 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
     Stage window;  // represents main Stage globally
     Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome,
         btnWithdraw,btnDeposit,btnTransfer,btnHomeDep,btnHomeWith,btnTransferHome;
-    TextField custName,custAccNum,custBalance, custWithdrawAmount, custDepositAmount,fromAccountNumFld,
-            toAccountNumFld,custAccNumDep, custAccNumWithdraw;
+    TextField custName,custAccNum,custBalance, withdrawAmount, depositAmount,fromAccountNumFld,
+            toAccountNumFld,custAccNumDep, custAccNumWithdraw,transferAmount;
     TextArea accountList;
     Bank bank;
 
@@ -67,10 +67,10 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         Label lblDepositAmount = new Label("Deposit Amount:");
         btnHomeDep = new Button("Back");btnHomeDep.setOnAction(this);
         custAccNumDep = new TextField();
-        custDepositAmount = new TextField();
+        depositAmount = new TextField();
         btnDeposit = new Button("Deposit");btnDeposit.setOnAction(this);
         VBox depositLayout = new VBox();
-        depositLayout.getChildren().addAll(lblAccNumDep,custAccNumDep,lblDepositAmount, custDepositAmount,btnDeposit,btnHomeDep);
+        depositLayout.getChildren().addAll(lblAccNumDep,custAccNumDep,lblDepositAmount, depositAmount,btnDeposit,btnHomeDep);
         depositScene = new Scene(depositLayout,500,500);
 
         // setting up Withdraw Scene
@@ -78,10 +78,10 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         Label lblWithdrawAmount = new Label("Withdrawl Amount:");
         btnHomeWith = new Button("Back");btnHomeWith.setOnAction(this);
         custAccNumWithdraw = new TextField();
-        custWithdrawAmount = new TextField();
+        withdrawAmount = new TextField();
         btnWithdraw = new Button("Withdraw");btnWithdraw.setOnAction(this);
         VBox withdrawLayout = new VBox();
-        withdrawLayout.getChildren().addAll(lblAccNumWith, custAccNumWithdraw,lblWithdrawAmount, custWithdrawAmount,btnWithdraw,btnHomeWith);
+        withdrawLayout.getChildren().addAll(lblAccNumWith, custAccNumWithdraw,lblWithdrawAmount, withdrawAmount,btnWithdraw,btnHomeWith);
         withdrawScene = new Scene(withdrawLayout,500,500);
 
         // setting up Transfer Scene
@@ -91,10 +91,11 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         btnTransferHome = new Button("Back");btnTransferHome.setOnAction(this);
         fromAccountNumFld = new TextField();
         toAccountNumFld = new TextField();
+        transferAmount = new TextField();
         btnTransfer = new Button("Transfer");btnTransfer.setOnAction(this);
         VBox transferLayout = new VBox();
         transferLayout.getChildren().addAll(lblAccNumFrom,fromAccountNumFld,lblAccNumTo,toAccountNumFld,lblTransferAmount,
-                btnTransfer,btnTransferHome);
+                transferAmount,btnTransfer,btnTransferHome);
         transferScene = new Scene(transferLayout,500,500);
 
         window.setScene(home);
@@ -142,7 +143,7 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
                 showAlert("Successfully added an account for " + custName.getText() + "!");
             } catch(DuplicateAccountNumber exception) {
                 System.out.println(exception);
-                showAlert("That account number is already in use! Please try a different one.");
+                showAlert(exception.getMessage());
             }
             catch(Exception exception) {
                 System.out.println(exception);
@@ -151,12 +152,12 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         }
         if(e.getSource()==btnDeposit) {
             try {
-                bank.depositAccount(Long.valueOf(custAccNumDep.getText()), Double.valueOf(custDepositAmount.getText()));
+                bank.depositAccount(Long.valueOf(custAccNumDep.getText()), Double.valueOf(depositAmount.getText()));
                 window.setScene(home);
-                showAlert("Successfully deposited " + Double.valueOf(custDepositAmount.getText()) + " dollars!");
+                showAlert("Successfully deposited " + Double.valueOf(depositAmount.getText()) + " dollars!");
             } catch(AccountNotFound exception) {
                 System.out.println(exception);
-                showAlert("An account with that account number doesn't exist!");
+                showAlert(exception.getMessage());
             }
             catch(Exception exception) {
                 System.out.println(exception);
@@ -166,15 +167,15 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         }
         if(e.getSource()==btnWithdraw) {
             try {
-                if(!bank.withdrawAccount(Long.valueOf(custAccNumWithdraw.getText()), Double.valueOf(custWithdrawAmount.getText()))) {
+                if(!bank.withdrawAccount(Long.valueOf(custAccNumWithdraw.getText()), Double.valueOf(withdrawAmount.getText()))) {
                     showAlert("Not enough funds!");
                 } else {
                     window.setScene(home);
-                    showAlert("Successfully withdrew " + Double.valueOf(custWithdrawAmount.getText()) + " dollars!");
+                    showAlert("Successfully withdrew " + Double.valueOf(withdrawAmount.getText()) + " dollars!");
                 }
             } catch(AccountNotFound exception) {
                 System.out.println(exception);
-                showAlert("An account with that account number doesn't exist!");
+                showAlert(exception.getMessage());
             } catch (Exception exception) {
                 System.out.println(exception);
                 showAlert("Something went wrong! Please ensure the values are set correctly.");
@@ -183,8 +184,25 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         }
         if(e.getSource()==btnTransfer) {
             System.out.println("Transfer");
+            try {
+                if(!bank.transfer(Long.valueOf(fromAccountNumFld.getText()), Long.valueOf(toAccountNumFld.getText()),
+                        Double.valueOf(transferAmount.getText()))) {
+                    showAlert("Not enough funds!");
+                } else {
+                    window.setScene(home);
+                    showAlert("Successfully transferred " + Double.valueOf(transferAmount.getText()) + " dollars!");
+                }
+            } catch(AccountNotFound exception) {
+                System.out.println(exception);
+                showAlert(exception.getMessage());
+            }
+            catch(Exception exception) {
+                System.out.println(exception);
+                showAlert("Something went wrong! Please ensure the values are set correctly.");
+            }
         }
         if(e.getSource() == btnListMenu) {
+            System.out.println("List all");
             accountList.setText(bank.printAccounts());
         }
     }

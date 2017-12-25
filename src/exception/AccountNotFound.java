@@ -4,5 +4,5 @@ public class AccountNotFound extends Exception{
     public AccountNotFound(String message) {
         super(message);
     }
-    public AccountNotFound() { super("Account not found!"); }
+    public AccountNotFound() { super("An account with that account number doesn't exist!"); }
 }
