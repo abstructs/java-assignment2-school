@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Bank;
 import exception.DuplicateAccountNumber;
-
+import javafx.scene.control.Alert.AlertType;
 // Andrew Wilson - 101069860
 
 public class Assignment2 extends Application implements EventHandler<ActionEvent> {
@@ -17,7 +17,7 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
     Stage window;  // represents main Stage globally
     Button btnAddMenu,btnDepositMenu,btnWithdrawMenu,btnTransferMenu,btnListMenu,btnAdd,btnHome,btnListHome,
         btnWithdraw,btnDeposit,btnTransfer,btnHomeDep,btnHomeWith,btnTransferHome;
-    TextField custName,custAccNum,custBalance,errorField,custWithdraw,custDeposit,fromAccountNumFld,
+    TextField custName,custAccNum,custBalance,custWithdraw,custDeposit,fromAccountNumFld,
             toAccountNumFld,custAccNumDep,custAccNumWith;
     TextArea accountList;
     Bank bank;
@@ -49,9 +49,8 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
         custBalance = new TextField();
         btnAdd = new Button("Add Account");btnAdd.setOnAction(this);
         btnHome = new Button("Back");btnHome.setOnAction(this);
-        errorField = new TextField();
         VBox addLayout =new VBox();
-        addLayout.getChildren().addAll(lblName,custName,lblAccNum,custAccNum,lblBalance,custBalance,btnAdd,btnHome,errorField);
+        addLayout.getChildren().addAll(lblName,custName,lblAccNum,custAccNum,lblBalance,custBalance,btnAdd,btnHome);
         addScene = new Scene(addLayout,500,500);
 
         // setting up List Scene
@@ -133,29 +132,38 @@ public class Assignment2 extends Application implements EventHandler<ActionEvent
             System.out.println("add account btn pressed (on transfer scene)");
             window.setScene(transferScene);
         }
-
         if(e.getSource() == btnAdd) {
+            System.out.println("Add");
             try {
                 bank.addAccount(Long.valueOf(custAccNum.getText()), Double.valueOf(custBalance.getText()),
                         custName.getText());
                 window.setScene(home);
             } catch(DuplicateAccountNumber exception) {
                 System.out.println(exception);
-                errorField.setText("That account number is already in use! Please try a different one.");
+                showAlert("That account number is already in use! Please try a different one.");
             }
             catch(Exception exception) {
                 System.out.println(exception);
-                errorField.setText("Something went wrong! Please set the values correctly.");
+                showAlert("Something went wrong! Please set the values correctly.");
             }
         }
-
+        if(e.getSource()==btnDeposit) {
+            System.out.println("Deposit");
+        }
+        if(e.getSource()==btnWithdraw) {
+            System.out.println("Withdraw");
+        }
+        if(e.getSource()==btnTransfer) {
+            System.out.println("Transfer");
+        }
         if(e.getSource() == btnListMenu) {
             accountList.setText(bank.printAccounts());
         }
-
-
     }
-
+    private static void showAlert(String message) {
+        Alert alert = new Alert(AlertType.NONE, message, ButtonType.OK);
+        alert.showAndWait();
+    }
     public static void main(String[] args) {
         launch(args);
     }
