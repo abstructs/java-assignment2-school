@@ -53,7 +53,7 @@ public class Account {
     //          if there are sufficient funds performs the transaction and returns a boolean
     // REQUIRES: there must be sufficient money in sending account
     // MODIFIES: balance
-    public boolean transfer(Account acc, long amount) {
+    public boolean transfer(Account acc, double amount) {
         if(acc.withdraw(amount)) {
             this.deposit(amount);
             return true;
